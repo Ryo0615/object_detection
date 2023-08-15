@@ -4,6 +4,7 @@ from matplotlib import pyplot as plt
 import torch
 import requests
 import io
+import math
 
 
 def _object_detection(image: Image, threshold: float = 0.25) -> Image:
@@ -17,7 +18,9 @@ def _object_detection(image: Image, threshold: float = 0.25) -> Image:
     # フォント設定
     truetype_url = "https://github.com/JotJunior/PHP-Boleto-ZF2/blob/master/public/assets/fonts/arial.ttf?raw=true"
     r = requests.get(truetype_url, allow_redirects=True)
-    size = int(image.size[0] * 0.02)
+    sqrt = math.sqrt(image.size[0] * image.size[1] / 10000)
+    size = int(sqrt * 5)
+    rec_width = int(sqrt / 2)
     font = ImageFont.truetype(io.BytesIO(r.content), size=size)
 
     # 検出結果の描画
@@ -31,7 +34,7 @@ def _object_detection(image: Image, threshold: float = 0.25) -> Image:
             if conf >= threshold:
                 color = cmap(class_id, bytes=True)
                 draw = ImageDraw.Draw(image)
-                draw.rectangle(bbox, outline=color, width=3)
+                draw.rectangle(bbox, outline=color, width=rec_width)
                 draw.text(
                     [bbox[0] + 5, bbox[1] + 10], class_name, fill=color, font=font
                 )
@@ -40,17 +43,88 @@ def _object_detection(image: Image, threshold: float = 0.25) -> Image:
 
 
 def main():
-    classes = ["person", "bicycle", "car", "motorcycle", "airplane", "bus", "train", "truck", "boat",
-               "traffic light", "fire hydrant", "stop sign", "parking meter", "bench", "bird", "cat", "dog",
-               "horse", "sheep", "cow", "elephant", "bear", "zebra", "giraffe", "backpack", "umbrella",
-               "handbag", "tie", "suitcase", "frisbee", "skis", "snowboard", "sports ball", "kite",
-               "baseball bat", "baseball glove", "skateboard", "surfboard", "tennis racket", "bottle",
-               "wine glass", "cup", "fork", "knife", "spoon", "bowl", "banana", "apple", "sandwich",
-               "orange", "broccoli", "carrot", "hot dog", "pizza", "donut", "cake", "chair", "couch",
-               "potted plant", "bed", "dining table", "toilet", "tv", "laptop", "mouse", "remote",
-               "keyboard", "cell phone", "microwave", "oven", "toaster", "sink", "refrigerator", "book",
-               "clock", "vase", "scissors", "teddy bear", "hair drier", "toothbrush"]
-
+    classes = [
+        "person",
+        "bicycle",
+        "car",
+        "motorcycle",
+        "airplane",
+        "bus",
+        "train",
+        "truck",
+        "boat",
+        "traffic light",
+        "fire hydrant",
+        "stop sign",
+        "parking meter",
+        "bench",
+        "bird",
+        "cat",
+        "dog",
+        "horse",
+        "sheep",
+        "cow",
+        "elephant",
+        "bear",
+        "zebra",
+        "giraffe",
+        "backpack",
+        "umbrella",
+        "handbag",
+        "tie",
+        "suitcase",
+        "frisbee",
+        "skis",
+        "snowboard",
+        "sports ball",
+        "kite",
+        "baseball bat",
+        "baseball glove",
+        "skateboard",
+        "surfboard",
+        "tennis racket",
+        "bottle",
+        "wine glass",
+        "cup",
+        "fork",
+        "knife",
+        "spoon",
+        "bowl",
+        "banana",
+        "apple",
+        "sandwich",
+        "orange",
+        "broccoli",
+        "carrot",
+        "hot dog",
+        "pizza",
+        "donut",
+        "cake",
+        "chair",
+        "couch",
+        "potted plant",
+        "bed",
+        "dining table",
+        "toilet",
+        "tv",
+        "laptop",
+        "mouse",
+        "remote",
+        "keyboard",
+        "cell phone",
+        "microwave",
+        "oven",
+        "toaster",
+        "sink",
+        "refrigerator",
+        "book",
+        "clock",
+        "vase",
+        "scissors",
+        "teddy bear",
+        "hair drier",
+        "toothbrush",
+    ]
 
     st.title("物体検出")
     st.write(
